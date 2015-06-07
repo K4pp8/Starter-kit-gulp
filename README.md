@@ -6,7 +6,7 @@ Set-up di una stuttura semplice per la prototipizzazione front end.
 N.b: per poter usare il progetto sevono:
 - node.js installato
 - gulp installato globalmente
-- lanciare da teminale "npm instal" sulla cartella del progetto
+- lanciare da teminale "npm install" sulla cartella del progetto
 
 Da implementare:
 - features nei branch git

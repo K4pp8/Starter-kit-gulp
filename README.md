@@ -3,9 +3,13 @@ Starter-Kit
 
 Set-up di una stuttura semplice per la prototipizzazione front end.
 
+N.b: per poter usare il progetto sevono:
+- node.js installato
+- gulp installato globalmente
+- lanciare da teminale "npm instal" sulla cartella del progetto
+
 Da implementare:
-- versionemeto su git
-- ignorare i node_modules
+- features nei branch git
 - contenuti dommy fatti bene
 - minifying e uglifying codice build
 
@@ -16,3 +20,5 @@ Implementato:
 - bulid jade
 - minifying img
 - build iniziale di tutto
+- versionemeto su git
+- ignorare i node_modules

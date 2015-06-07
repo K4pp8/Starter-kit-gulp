@@ -12,6 +12,7 @@ Da implementare:
 - features nei branch git
 - contenuti dommy fatti bene
 - minifying e uglifying codice build
+- implemetare tutto su Yeoman
 
 Implementato:
 - setup gulp

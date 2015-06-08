@@ -8,6 +8,9 @@ N.b: per poter usare il progetto sevono:
 - gulp installato globalmente
 - lanciare da teminale "npm install" sulla cartella del progetto
 
+Importante:
+- fixare cartelle ed incule sass
+
 Da implementare:
 - features nei branch git
 - contenuti dommy fatti bene

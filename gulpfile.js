@@ -14,7 +14,7 @@ var gulp = require('gulp'),
     htmlmin = require('gulp-htmlmin');
     
 var src = "./src/";
-var distSrc = "./build/";
+var distSrc = "./dist/";
 // Check for --production flag
 var PRODUCTION = !!(yargs.argv.production);
 
@@ -102,7 +102,7 @@ gulp.task('img', function () {
 // Task that create a temporary webserver
 gulp.task('webserver', function() {
     connect.server({
-        root: 'build',
+        root: 'dist',
         port: 8000,
         livereload: true
     });
@@ -110,7 +110,7 @@ gulp.task('webserver', function() {
 
 // Task that reload a temporary webserver
 gulp.task('reload', function () {
-    gulp.src('./build/*.html')
+    gulp.src('./dist/*.html')
         .pipe(connect.reload());
 });
 

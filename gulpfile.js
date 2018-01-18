@@ -20,10 +20,19 @@ var PRODUCTION = !!(yargs.argv.production);
 
 // For external resources ( bootstrap o foundation )
 var sassPaths = [];
-var jsSrc = [src + "js/**/*.js"];
-var jsVendorsSrc = [
-        "bower_components/jquery/dist/jquery.slim.min.js"
+
+var cmps = [ 'common', 'component' ];
+function getSrcsOfComponenet( componenetName ){
+    return [
+        'src/js/app/'+ componenetName +'/*.js',
+        'src/js/app/'+ componenetName +'/directive/*.js',
+        'src/js/app/'+ componenetName +'/models/*.js',
+        'src/js/app/'+ componenetName +'/services/*.js',
+        'src/js/app/'+ componenetName +'/filter/*.js',
+        'src/js/app/'+ componenetName +'/controllers/modals/*.js',
+        'src/js/app/'+ componenetName +'/controllers/*.js'
     ];
+}
 
 // Task that compile the scss to css 
 gulp.task('sass', function(){
@@ -50,27 +59,44 @@ gulp.task('js', function () {
     gulp.src(distSrc + '/**/*.map', { read: false }) // much faster 
         .pipe(rimraf());
 
-    gulp.src( jsSrc )
-        .pipe( gulpif(!PRODUCTION, sourcemaps.init() ))
-        .pipe(concat('main.js'))
-        .pipe(gulpif(!PRODUCTION, sourcemaps.write()))     
-        .pipe(gulpif(PRODUCTION, uglify()))     
-        .pipe(gulp.dest(distSrc + '/js'));
+    for (var key in cmps) {
+        gulp.src( getSrcsOfComponenet( cmps[key] ) )
+           // .pipe( gulpif(!PRODUCTION, sourcemaps.init() ))
+            .pipe(concat(cmps[key] + '.app.js'))
+           // .pipe(gulpif(!PRODUCTION, sourcemaps.write()))     
+            .pipe(gulpif(PRODUCTION, uglify()))     
+            .pipe(gulp.dest(distSrc + '/js/app/' + cmps[key] + '/'));
+    }
+
 });
 
 gulp.task('lint', function() {
-    gulp.src( jsSrc )
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish))
+    for (var key in cmps) {
+        gulp.src( getSrcsOfComponenet( cmps[key] ) )
+            .pipe(jshint())
+            .pipe(jshint.reporter(stylish))
+    }
 });
 
 // Task that concat ( or compress if we are in production ) vendors
 gulp.task('vendors', function () {
 
-    gulp.src( jsVendorsSrc )
+    gulp.src( [
+            'bower_components/jquery/dist/jquery.min.js',
+            'bower_components/angular/angular.min.js',
+            'bower_components/angular-route/angular-route.min.js',
+        
+            'bower_components/angular-i18n/angular-locale_it.js',
+            'bower_components/angular-messages/angular-messages.min.js',
+            'bower_components/angular-bootstrap/ui-bootstrap.js',
+            'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+            'bower_components/moment/min/moment.min.js',
+            'bower_components/angular-confirm/dist/angular-confirm.min.js',
+            'bower_components/angular-toastr/dist/angular-toastr.tpls.min.js',
+            'src/js/vendors/ng-table.min.js'
+        ])
         .pipe(concat('vendors.js'))
-        .pipe(gulpif(PRODUCTION, uglify()))     
-        .pipe(gulp.dest(distSrc + '/js'));
+        .pipe(gulp.dest(distSrc + '/js/'));
 });
 
 // Task that move ( or compress if we are in production ) html 

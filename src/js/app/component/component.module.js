@@ -1,0 +1,1 @@
+var compapp = angular.module('component', []);

@@ -1,6 +1,6 @@
 {
   "name": "starter",
-  "description": "Ecosistema di frontend",
+  "description": "Frontend ecosistem",
   "main": "",
   "authors": [
     "Klaudio Bojaxhiu"
@@ -14,6 +14,16 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^3.2.1"
+    "jquery": "^2.*.*",
+    "moment": "^2.19.2",
+    "bootstrap-sass": "^3.3.7",
+    "bootswatch-sass": "^3.2.0",
+    "angular": "^1.6.6",
+    "angular-bootstrap": "angular-bootstrap#^2.5.0 ",
+    "angular-messages": "^1.6.6",
+    "angular-confirm": "angular1-confirm#^1.1.0",
+    "angular-toastr": "^2.1.1",
+    "angular-route": "^1.6.7",
+    "angular-i18n": "^1.6.7"
   }
 }

@@ -1,0 +1,1 @@
+var commonapp = angular.module('common', ['ngMessages', 'cp.ngConfirm', 'toastr']);

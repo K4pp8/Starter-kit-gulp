@@ -1,28 +1,31 @@
 Starter-Kit
 ===================
 
-Set-up di una stuttura semplice per la prototipizzazione front end.
+To run this starter-kit yon must have node installed in your dev machine.
 
-N.b: per poter usare il progetto sevono:
-- node.js installato
-- gulp installato globalmente
-- lanciare da teminale "npm install" sulla cartella del progetto
+```bash
+npm install -g gulp bower
+```
 
-Importante:
-- fixare cartelle ed incule sass
+Then open the folder in your command line, and install the needed dependencies:
 
-Da implementare:
-- features nei branch git
-- contenuti dommy fatti bene
-- minifying e uglifying codice build
-- implemetare tutto su Yeoman
+```bash
+npm install
+```
 
-Implementato:
-- setup gulp
-- live reload
-- build sass
-- bulid jade
-- minifying img
-- build iniziale di tutto
-- versionemeto su git
-- ignorare i node_modules
+and install all vendors with bower:
+
+```bash
+bower install
+```
+
+Finally, run `npm start` to run Gulp. Your finished site will be created in a folder called `build`, viewable at this URL:
+
+```
+http://localhost:8000
+```
+
+For run in production mode you must run:
+```bash
+npm run prod
+```

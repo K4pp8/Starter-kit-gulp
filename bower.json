@@ -1,0 +1,19 @@
+{
+  "name": "starter",
+  "description": "Ecosistema di frontend",
+  "main": "",
+  "authors": [
+    "Klaudio Bojaxhiu"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}

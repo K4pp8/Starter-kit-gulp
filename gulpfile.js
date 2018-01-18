@@ -1,79 +1,125 @@
 var gulp = require('gulp'),
-    
-    jade = require('gulp-jade'),
-    sass = require('gulp-sass'),
-    uglify = require('gulp-uglify'),
-
-    //minifyCSS = require('gulp-minify-css'),
-    //concat = require('gulp-concat'),
+    yargs = require('yargs'),
+    gulpif = require('gulp-if'),
+    rimraf = require('gulp-rimraf'),
+    connect = require('gulp-connect')
     imagemin = require('gulp-imagemin'),
     pngquant = require('imagemin-pngquant'),
+    uglify = require('gulp-uglify'),
+    jshint = require('gulp-jshint'),
+    stylish = require('jshint-stylish'),
+    concat = require('gulp-concat'),
+    sourcemaps = require('gulp-sourcemaps'),
+    sass = require('gulp-sass'),
+    htmlmin = require('gulp-htmlmin');
+    
+var src = "./src/";
+var distSrc = "./build/";
+// Check for --production flag
+var PRODUCTION = !!(yargs.argv.production);
 
-    connect = require('gulp-connect');
+// For external resources ( bootstrap o foundation )
+var sassPaths = [];
+var jsSrc = [src + "js/**/*.js"];
+var jsVendorsSrc = [
+        "bower_components/jquery/dist/jquery.slim.min.js"
+    ];
 
-//-------------- compilazione file jade e sass
-
-gulp.task('jade', function() {
-  return gulp.src('./src/jade/*.jade')
-    .pipe(jade())
-    .pipe(gulp.dest('./build/'));
+// Task that compile the scss to css 
+gulp.task('sass', function(){
+    gulp.src( [ src + '/scss/*.scss'])
+        .pipe(gulpif(!PRODUCTION, sourcemaps.init()))
+        .pipe( gulpif(PRODUCTION,
+            sass({
+                includePaths: sassPaths,
+                outputStyle: 'compressed' // if css compressed **file size**
+            }).on('error', sass.logError),
+            sass({
+                includePaths: sassPaths,
+            // outputStyle: 'compressed' // if css compressed **file size**
+            }).on('error', sass.logError)
+        ))
+        .pipe(gulpif(!PRODUCTION, sourcemaps.write()))        
+        .pipe(gulp.dest(distSrc + '/css'));
 });
 
- 
-gulp.task('sass', function () {
-  gulp.src('./src/sass/*.sass')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./build/css'));
+// Task that concat ( or compress if we are in production ) javascript
+gulp.task('js', function () {
+
+    // cancello i file mapp
+    gulp.src(distSrc + '/**/*.map', { read: false }) // much faster 
+        .pipe(rimraf());
+
+    gulp.src( jsSrc )
+        .pipe( gulpif(!PRODUCTION, sourcemaps.init() ))
+        .pipe(concat('main.js'))
+        .pipe(gulpif(!PRODUCTION, sourcemaps.write()))     
+        .pipe(gulpif(PRODUCTION, uglify()))     
+        .pipe(gulp.dest(distSrc + '/js'));
 });
 
-//-------------- ottimizzazione -----------------
-
-gulp.task('compress', function() {
-  return gulp.src('src/js/*.js')
-    .pipe(uglify())
-    .pipe(gulp.dest('build/js'));
+gulp.task('lint', function() {
+    gulp.src( jsSrc )
+        .pipe(jshint())
+        .pipe(jshint.reporter(stylish))
 });
 
+// Task that concat ( or compress if we are in production ) vendors
+gulp.task('vendors', function () {
+
+    gulp.src( jsVendorsSrc )
+        .pipe(concat('vendors.js'))
+        .pipe(gulpif(PRODUCTION, uglify()))     
+        .pipe(gulp.dest(distSrc + '/js'));
+});
+
+// Task that move ( or compress if we are in production ) html 
+gulp.task('html', function () {
+    gulp.src(src + '**/*.html')
+        .pipe( gulpif(PRODUCTION, 
+            htmlmin({
+                //collapseWhitespace: true,
+                removeComments: true,
+                collapseInlineTagWhitespace: true
+            })
+        ))
+        .pipe(gulp.dest(distSrc));
+});
+
+// Task that move ( or compress if we are in production ) img e co. 
 gulp.task('img', function () {
-    return gulp.src('./src/img/**/*')
-        .pipe(imagemin({
-            progressive: true,
-            svgoPlugins: [{removeViewBox: false}],
-            use: [pngquant()]
-        }))
-        .pipe(gulp.dest('./build/img'));
+    gulp.src( src + 'assets/**/*.*' )
+        .pipe( gulpif(PRODUCTION, 
+            imagemin({
+                progressive: true,
+                svgoPlugins: [{removeViewBox: false}],
+                use: [pngquant()]
+            })
+        ))
+        .pipe(gulp.dest(distSrc + '/assets'));
 });
 
-//-------------- gestione server ----------------
-
+// Task that create a temporary webserver
 gulp.task('webserver', function() {
-  connect.server({
-    root: 'build',
-    port: 8000,
-    livereload: true
-  });
+    connect.server({
+        root: 'build',
+        port: 8000,
+        livereload: true
+    });
 });
 
+// Task that reload a temporary webserver
 gulp.task('reload', function () {
-  gulp.src('./build/*.html')
-    .pipe(connect.reload());
+    gulp.src('./build/*.html')
+        .pipe(connect.reload());
 });
-
-//-------------------------------------------------
-
 
 gulp.task('watch', function () {
-    gulp.watch('./src/sass/**/*.sass', ['sass']);
-    gulp.watch('./src/jade/**/*.*', ['jade']);
-    gulp.watch('./src/js/*.js', ['compress']);
-
-    gulp.watch('./build/*.html', ['reload']);
-    gulp.watch('./build/css/*.css', ['reload']);
-    gulp.watch('./build/js/*.js', ['reload']);
+    gulp.watch('./src/**/*.html', ['html', 'reload']);
+    gulp.watch('./src/js/**/*.*', ['js', 'lint', 'reload']);
+    gulp.watch('./src/scss/**/*.*', ['sass', 'reload']);
+    gulp.watch('./src/assets/**/*.*', ['img', 'reload']);
 });
 
-gulp.task('build', ['jade', 'sass', 'img', 'compress']);
-gulp.task('server', ['webserver', 'watch']);
-
+gulp.task('build', ['html', 'js', 'lint', 'vendors', 'sass', 'img']);
 gulp.task('default', ['build', 'webserver', 'watch']);
-
